@@ -29,7 +29,18 @@ Agora sim você cola o conteúdo:
 ```ini
 [Desktop Entry]
 Type=Application
-Exec=nvidia-settings --assign CurrentMetaMode="HDMI-0: nvidia-auto-select { ForceFullCompositionPipeline = On }"
+Exec=bash -c '
+# Verifica se HDMI-0 está conectado
+if xrandr | grep -q "^HDMI-0 connected"; then
+    # Pega informações do HDMI-0
+    HDMI_INFO=$(xrandr | grep "^HDMI-0 connected")
+    RESOLUTION=$(echo $HDMI_INFO | grep -oP "\d+x\d+_\d+")
+    POSITION=$(echo $HDMI_INFO | grep -oP "\+\d+\+\d+")
+
+    # Aplica ForceFullCompositionPipeline apenas no HDMI-0
+    nvidia-settings --assign CurrentMetaMode="HDMI-0: ${RESOLUTION} ${POSITION} { ForceFullCompositionPipeline = On }"
+fi
+'
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true
