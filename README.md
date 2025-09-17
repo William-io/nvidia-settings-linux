@@ -1,8 +1,4 @@
-# nvidia-settings-linux
-
-# Corrigindo Tearing no HDMI com NVIDIA
-
-## Passo a Passo Manual
+# Corrigindo Tearing no HDMI & Monitor via USB-C/HDMI - _*Somente para maquina com nvidia_
 
 ### 1. Criar a pasta necessária
 
@@ -16,46 +12,28 @@ Esse `-p` garante que tanto o `~/.config` quanto o `autostart` existam.
 
 ### 2. Criar o arquivo de configuração
 
-Depois disso, o comando vai funcionar:
-
 ```bash
-nano ~/.config/autostart/nvidia-hdmi-fix.desktop
+nano ~/.config/autostart/fix-monitors.desktop
 ```
 
 ### 3. Adicionar o conteúdo
 
-Agora sim você cola o conteúdo:
-
 ```ini
 [Desktop Entry]
 Type=Application
-Exec=bash -c '
-# Verifica se HDMI-0 está conectado
-if xrandr | grep -q "^HDMI-0 connected"; then
-    # Pega informações do HDMI-0
-    HDMI_INFO=$(xrandr | grep "^HDMI-0 connected")
-    RESOLUTION=$(echo $HDMI_INFO | grep -oP "\d+x\d+_\d+")
-    POSITION=$(echo $HDMI_INFO | grep -oP "\+\d+\+\d+")
-
-    # Aplica ForceFullCompositionPipeline apenas no HDMI-0
-    nvidia-settings --assign CurrentMetaMode="HDMI-0: ${RESOLUTION} ${POSITION} { ForceFullCompositionPipeline = On }"
-fi
-'
+Exec=bash -c "/usr/bin/xrandr --output DP-1-1 --pos 0x0 && /usr/bin/xrandr --output HDMI-0 --mode 1920x1080 --pos 1080x447 --rotate normal && /usr/bin/nvidia-settings --assign CurrentMetaMode='HDMI-0: nvidia-auto-select +1080+447 { ForceCompositionPipeline=On, ForceFullCompositionPipeline=On }'"
 Hidden=false
-NoDisplay=false
 X-GNOME-Autostart-enabled=true
-Name=Fix HDMI Tearing
-Comment=Active ForceFullCompositionPipeline on HDMI-0
+Name=Fix Monitors Layout
+Comment=Repositions DP-1-1 and applies ForceFullPipeline to HDMI-0
 ```
 
 ### 4. Salvar e dar permissão
 
-Salva (`Ctrl+O`, Enter, `Ctrl+X`) e dá permissão de execução:
+Salva (`Ctrl+O`, Enter, `Ctrl+X`) e certifique-se que o arquivo é legível:
 
 ```bash
-chmod +x ~/.config/autostart/nvidia-hdmi-fix.desktop
+chmod 644 ~/.config/autostart/fix-monitors.desktop
 ```
-
-**Da próxima vez que você fizer login, vai rodar esse comando e aplicar a correção de tearing só no HDMI-0.**
 
 ---
