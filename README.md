@@ -21,7 +21,7 @@ nano ~/.config/autostart/fix-monitors.desktop
 ```ini
 [Desktop Entry]
 Type=Application
-Exec=bash -c "/usr/bin/xrandr --output DP-1-1 --pos 0x0 && /usr/bin/xrandr --output HDMI-0 --mode 1920x1080 --pos 1080x447 --rotate normal && /usr/bin/nvidia-settings --assign CurrentMetaMode='HDMI-0: nvidia-auto-select +1080+447 { ForceCompositionPipeline=On, ForceFullCompositionPipeline=On }'"
+Exec=bash -c "/usr/bin/xrandr --output DP-1-1 --pos 0x0 --output HDMI-0 --mode 1920x1080 --rate 74.97 --pos 1080x447 --rotate normal && /usr/bin/nvidia-settings --assign CurrentMetaMode='DP-1-1: nvidia-auto-select +0+0, HDMI-0: 1920x1080_75 +1080+447 { ForceCompositionPipeline=On, ForceFullCompositionPipeline=On }'"
 Hidden=false
 X-GNOME-Autostart-enabled=true
 Name=Fix Monitors Layout
