@@ -1,4 +1,4 @@
-## Corrigindo Tearing Monitor HDMI & Monitor via USB-C/HDMI INTEL - _*Somente para maquina com nvidia_
+## Corrigindo Tearing Monitor HDMI & Monitor INTEL - _*Somente para maquina com nvidia_
 
 ### 1. Criar a pasta necessária
 
@@ -38,7 +38,7 @@ chmod 644 ~/.config/autostart/fix-monitors.desktop
 ### Mudanças
 ```
 Como funciona a condição:
-if /usr/bin/xrandr | grep -q 'DP-1-1 disconnected' - Verifica se o DP-1-1 está desconectado
+if /usr/bin/xrandr | grep -q 'DP-1-1 connected' - Verifica se o DP-1-1 está desconectado
 
 Se desconectado:
 
