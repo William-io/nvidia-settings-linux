@@ -40,6 +40,8 @@ Exec=/home/user/.local/bin/fix-monitors.sh
 Terminal=false
 X-GNOME-Autostart-enabled=true
 ```
+>Você também pode adicionar um pequeno delay no arquivo .desktop para garantir que o X server esteja completamente iniciado:
+>"sleep 2 && /home/user/.local/bin/fix-monitors.sh"
 
 ### 4. Salvar utilizando nano
 
