@@ -1,58 +1,52 @@
 ## Corrigindo Tearing Monitor HDMI & Monitor INTEL - _*Somente para maquina com nvidia_
 
-### 1. Primeiro, vamos criar um script shell separado:
+### 1. Criar a pasta necessária
 
-```bash
-mkdir -p ~/.local/bin
-nano ~/.local/bin/fix-monitors.sh
-# Cole o conteúdo do script & 
-chmod +x ~/.local/bin/fix-monitors.sh
-```
->Trecho que precisar ser copiado para o fix-monitors.sh
-```bach
-#!/bin/bash
-
-if /usr/bin/xrandr | grep -q 'DP-1-1 connected'; then
-    /usr/bin/xrandr --output DP-1-1 --pos 0x0
-else
-    /usr/bin/xrandr --output DP-1-1 --mode 1920x1080 --rate 74.97 --pos 0x0
-fi
-
-/usr/bin/xrandr --output HDMI-0 --mode 1920x1080 --rate 74.97 --pos 1080x447 --rotate normal
-/usr/bin/nvidia-settings --assign CurrentMetaMode='HDMI-0: 1920x1080_75 +1080+447 { ForceCompositionPipeline=On, ForceFullCompositionPipeline=On }'
-```
-
-### 2. Agora, vamos criar o arquivo .desktop:
+Antes de abrir o nano, você precisa criar a pasta. Só rodar:
 
 ```bash
 mkdir -p ~/.config/autostart
-nano ~/.config/autostart/fix-monitors.desktop
-# Cole o conteúdo do arquivo .desktop
 ```
 
->Adicionar o conteúdo ao fix-monitors.desktop
+Esse `-p` garante que tanto o `~/.config` quanto o `autostart` existam.
 
+### 2. Criar o arquivo de configuração
+
+```bash
+nano ~/.config/autostart/fix-monitors.desktop
+```
+
+### 3. Adicionar o conteúdo
 ```ini
 [Desktop Entry]
 Type=Application
-Name=Fix Monitors
-Exec=/home/user/.local/bin/fix-monitors.sh
-Terminal=false
+Exec=bash -c "export INTEL_DEBUG=sync && if /usr/bin/xrandr | grep -q 'DP-1-1 connected'; then /usr/bin/xrandr --output DP-1-1 --pos 0x0; else /usr/bin/xrandr --output DP-1-1 --mode 1920x1080 --rate 74.97 --pos 0x0; fi && /usr/bin/xrandr --output HDMI-0 --mode 1920x1080 --rate 74.97 --pos 1080x447 --rotate normal && /usr/bin/nvidia-settings --assign CurrentMetaMode='HDMI-0: 1920x1080_75 +1080+447 { ForceCompositionPipeline=On, ForceFullCompositionPipeline=On }'"
+Hidden=false
 X-GNOME-Autostart-enabled=true
+Name=Fix Monitors Layout
+Comment=Repositions DP-1-1 and applies ForceFullPipeline to HDMI-0
 ```
->Você também pode adicionar um pequeno delay no arquivo .desktop para garantir que o X server esteja completamente iniciado:
->"sleep 2 && /home/user/.local/bin/fix-monitors.sh"
 
-### 4. Salvar utilizando nano
+### 4. Salvar e dar permissão
 
-Salva (`Ctrl+O`, Enter, `Ctrl+X`) 
+Salva (`Ctrl+O`, Enter, `Ctrl+X`) e certifique-se que o arquivo é legível:
 
-### Objetivo
+```bash
+chmod 644 ~/.config/autostart/fix-monitors.desktop
 ```
-1. Verifica se o monitor DP-1-1 está conectado
-2. Se estiver conectado, apenas define sua posição (--pos 0x0)
-3. Se não estiver conectado, configura modo, taxa de atualização e posição
-4. Configura o monitor HDMI-0
-5. Aplica configurações NVIDIA para evitar screen tearing
+### Mudanças
 ```
----
+Como funciona a condição:
+if /usr/bin/xrandr | grep -q 'DP-1-1 connected' - Verifica se o DP-1-1 está desconectado
+Se desconectado:
+Aplica --mode 1920x1080 --rate 74.97 --pos 0x0 para forçar a conexão
+Se conectado:
+Aplica apenas --pos 0x0 sem especificar modo/taxa
+HDMI-0: Sempre configurado normalmente (não muda)
+Vantagens:
+Só força o modo específico quando o DP-1-1 estiver realmente desconectado
+Preserva configurações automáticas quando o monitor já está funcionando
+Evita conflitos de resolução desnecessários
+Mais eficiente quando tudo está funcionando corretamente
+Agora o sistema só aplicará a configuração forçada --mode 1920x1080 --rate 74.97 no DP-1-1 quando ele realmente precisar!
+```
